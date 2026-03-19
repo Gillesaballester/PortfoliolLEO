@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Léo Chanserelle — Video Editor</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:     #0e0e0e;
+    --bg2:    #141414;
+    --line:   rgba(255,255,255,0.08);
+    --white:  #ffffff;
+    --off:    #e8e8e8;
+    --mid:    #777;
+    --dim:    #333;
+  }
+
+  *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--off);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    overflow-x: hidden;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 60px;
+    background: rgba(14,14,14,0.88);
+    backdrop-filter: blur(18px);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 0.9rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--white);
+    text-decoration: none;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 40px;
+    list-style: none;
+  }
+
+  .nav-links a {
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--mid);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .nav-links a:hover { color: var(--white); }
+
+  /* ── HERO ── */
+  #hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 0 60px 80px;
+    position: relative;
+    overflow: hidden;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .hero-bg-text {
+    position: absolute;
+    top: 50%; left: 60px;
+    transform: translateY(-55%);
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: clamp(6rem, 16vw, 18rem);
+    line-height: 0.85;
+    color: transparent;
+    -webkit-text-stroke: 1px rgba(255,255,255,0.05);
+    pointer-events: none;
+    letter-spacing: -0.02em;
+    user-select: none;
+  }
+
+  .hero-editor {
+    position: absolute;
+    top: 18%; right: 40px;
+    transform: translateY(-50%);
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: clamp(4rem, 9vw, 11rem);
+    color: transparent;
+    -webkit-text-stroke: 1px rgba(255,255,255,0.07);
+    pointer-events: none;
+    letter-spacing: -0.03em;
+    user-select: none;
+    white-space: nowrap;
+    line-height: 1;
+  }
+
+  .hero-content {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: end;
+    gap: 60px;
+  }
+
+  .hero-tag {
+    font-size: 0.6rem;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: var(--mid);
+    margin-bottom: 20px;
+    opacity: 0;
+    animation: up 0.8s ease 0.1s forwards;
+  }
+
+  h1 {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: clamp(3rem, 5.5vw, 6rem);
+    line-height: 1;
+    letter-spacing: -0.02em;
+    color: var(--white);
+    opacity: 0;
+    animation: up 0.8s ease 0.2s forwards;
+  }
+
+  h1 em {
+    font-style: normal;
+    color: transparent;
+    -webkit-text-stroke: 1px rgba(255,255,255,0.3);
+  }
+
+  .hero-right {
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+    opacity: 0;
+    animation: up 0.8s ease 0.35s forwards;
+  }
+
+  .hero-desc {
+    font-size: 0.85rem;
+    line-height: 2;
+    color: var(--mid);
+    max-width: 380px;
+  }
+
+  .hero-actions {
+    display: flex;
+    gap: 14px;
+  }
+
+  .btn-primary {
+    padding: 12px 26px;
+    background: var(--white);
+    color: var(--bg);
+    font-family: 'Syne', sans-serif;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    text-decoration: none;
+    transition: opacity 0.2s;
+    display: inline-block;
+  }
+
+  .btn-primary:hover { opacity: 0.8; }
+
+  .btn-ghost {
+    padding: 12px 26px;
+    border: 1px solid var(--line);
+    color: var(--mid);
+    font-family: 'Syne', sans-serif;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    text-decoration: none;
+    transition: border-color 0.2s, color 0.2s;
+    display: inline-block;
+  }
+
+  .btn-ghost:hover { border-color: rgba(255,255,255,0.25); color: var(--white); }
+
+  /* ── SECTION BASE ── */
+  .section {
+    padding: 100px 60px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .section-label {
+    font-size: 0.58rem;
+    letter-spacing: 0.45em;
+    text-transform: uppercase;
+    color: var(--mid);
+    margin-bottom: 60px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--line);
+  }
+
+  /* ── CAROUSEL ── */
+  #works { padding: 100px 0; border-bottom: 1px solid var(--line); }
+
+  #works .section-label { padding: 0 60px; }
+
+  .carousel-outer {
+    position: relative;
+    overflow: hidden;
+    padding: 0;
+  }
+
+  .carousel-track {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    width: 100%;
+    padding: 0 60px;
+    box-sizing: border-box;
+  }
+
+
+  .carousel-track::-webkit-scrollbar { display: none; }
+
+  .vid-card {
+    flex-shrink: 0;
+    width: 360px;
+    scroll-snap-align: start;
+    cursor: pointer;
+    border: 1px solid var(--line);
+    transition: border-color 0.3s, transform 0.3s;
+  }
+
+  .vid-card:hover {
+    border-color: rgba(255,255,255,0.18);
+    transform: translateY(-4px);
+  }
+
+  .vid-thumb {
+    width: 100%;
+    aspect-ratio: 16/9;
+    overflow: hidden;
+    background: var(--bg2);
+    position: relative;
+  }
+
+  .vid-thumb img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    opacity: 0.85;
+    filter: none;
+    transition: opacity 0.4s, transform 0.5s;
+    display: block;
+  }
+
+  .vid-card:hover .vid-thumb img { opacity: 1; transform: scale(1.04); }
+
+  .vid-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s;
+    background: rgba(0,0,0,0.2);
+  }
+
+  .vid-card:hover .vid-overlay { opacity: 1; }
+
+  .play-ring {
+    width: 48px; height: 48px;
+    border: 1px solid rgba(255,255,255,0.7);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    color: var(--white);
+    background: rgba(14,14,14,0.5);
+    backdrop-filter: blur(4px);
+  }
+
+  .vid-info {
+    padding: 14px 16px 16px;
+    background: var(--bg2);
+    border-top: 1px solid var(--line);
+  }
+
+  .vid-cat {
+    font-size: 0.55rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--mid);
+    margin-bottom: 4px;
+  }
+
+  .vid-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--white);
+  }
+
+  .carousel-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 24px 60px 0;
+  }
+
+  .carr-count {
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    color: var(--mid);
+  }
+
+  .carr-btns { display: flex; gap: 8px; }
+
+  .carr-btn {
+    width: 38px; height: 38px;
+    border: 1px solid var(--line);
+    background: transparent;
+    color: var(--mid);
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: border-color 0.2s, color 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .carr-btn:hover { border-color: rgba(255,255,255,0.25); color: var(--white); }
+
+  /* ── CONTACT ── */
+  #contact {
+    padding: 100px 60px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: start;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .contact-left {}
+
+  .contact-title {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: clamp(2.5rem, 4vw, 4rem);
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    color: var(--white);
+    margin-bottom: 16px;
+  }
+
+  .contact-title em {
+    font-style: normal;
+    color: transparent;
+    -webkit-text-stroke: 1px rgba(255,255,255,0.25);
+  }
+
+  .contact-desc {
+    font-size: 0.82rem;
+    color: var(--mid);
+    line-height: 1.95;
+    margin-bottom: 44px;
+    max-width: 360px;
+  }
+
+  /* Socials */
+  .socials { display: flex; flex-direction: column; gap: 10px; }
+
+  .social-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 14px 18px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    text-decoration: none;
+    transition: border-color 0.25s, background 0.25s, transform 0.25s;
+    cursor: pointer;
+  }
+
+  .social-row:hover {
+    border-color: rgba(255,255,255,0.2);
+    background: rgba(255,255,255,0.03);
+    transform: scale(1.02);
+  }
+
+  .social-icon {
+    width: 34px; height: 34px;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+    color: var(--mid);
+    flex-shrink: 0;
+  }
+
+  .social-lbl {
+    font-size: 0.52rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--dim);
+  }
+
+  .social-val {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--white);
+  }
+
+  .social-arrow {
+    margin-left: auto;
+    font-size: 0.75rem;
+    color: var(--dim);
+    transition: color 0.2s, transform 0.2s;
+  }
+
+  .social-row:hover .social-arrow { color: var(--white); transform: translateX(3px); }
+
+  /* FORM */
+  .contact-form { display: flex; flex-direction: column; gap: 18px; }
+
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+  .fg { display: flex; flex-direction: column; gap: 7px; }
+
+  .fg label {
+    font-size: 0.52rem;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--dim);
+  }
+
+  .fg input, .fg textarea {
+    background: var(--bg2);
+    border: 1px solid var(--line);
+    padding: 12px 14px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 300;
+    color: var(--white);
+    outline: none;
+    transition: border-color 0.2s;
+    border-radius: 4px;
+  }
+
+  .fg input::placeholder, .fg textarea::placeholder { color: var(--dim); }
+  .fg input:focus, .fg textarea:focus { border-color: rgba(255,255,255,0.25); }
+  .fg textarea { resize: none; height: 110px; }
+
+  .btn-submit {
+    padding: 14px;
+    background: var(--white);
+    color: var(--bg);
+    border: none;
+    font-family: 'Syne', sans-serif;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: opacity 0.2s;
+  }
+
+  .btn-submit:hover { opacity: 0.85; }
+
+  .form-ok {
+    display: none;
+    font-size: 0.68rem;
+    letter-spacing: 0.12em;
+    color: var(--white);
+    text-align: center;
+    padding: 11px;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    padding: 28px 60px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .f-logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 0.82rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--white);
+  }
+
+  .f-copy { font-size: 0.58rem; letter-spacing: 0.1em; color: var(--dim); }
+
+  .f-by {
+    font-size: 0.55rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--dim);
+    opacity: 0.5;
+  }
+
+  /* ── LIGHTBOX ── */
+  .lb {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 500;
+    background: rgba(0,0,0,0.95);
+    backdrop-filter: blur(20px);
+    align-items: center;
+    justify-content: center;
+    padding: 48px;
+  }
+
+  .lb.on { display: flex; animation: fadeIn 0.3s ease; }
+
+  .lb-inner { width: 100%; max-width: 900px; position: relative; }
+
+  .lb-video { width: 100%; aspect-ratio: 16/9; background: #000; }
+  .lb-video iframe { width: 100%; height: 100%; border: none; display: block; }
+
+  .lb-close {
+    position: absolute;
+    top: -44px; right: 0;
+    background: none;
+    border: 1px solid var(--line);
+    color: var(--mid);
+    width: 34px; height: 34px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: border-color 0.2s, color 0.2s;
+  }
+
+  .lb-close:hover { border-color: rgba(255,255,255,0.3); color: var(--white); }
+
+  .lb-title {
+    margin-top: 14px;
+    font-family: 'Syne', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    color: var(--white);
+  }
+
+  /* ── ANIMATIONS ── */
+  @keyframes up {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 860px) {
+    nav { padding: 18px 24px; }
+    .nav-links { display: none; }
+    #hero { padding: 100px 24px 60px; }
+    .hero-content { grid-template-columns: 1fr; gap: 32px; }
+    .hero-bg-text { left: 24px; font-size: 5rem; }
+    .section { padding: 70px 24px; }
+    #works { padding: 70px 0; }
+    #works .section-label, .carousel-outer, .carousel-nav { padding-left: 24px; padding-right: 24px; }
+    #contact { grid-template-columns: 1fr; padding: 70px 24px; gap: 48px; }
+    .form-row { grid-template-columns: 1fr; }
+    footer { flex-direction: column; gap: 10px; padding: 22px 24px; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="logo" href="#hero">Léo Chanserelle</a>
+  <ul class="nav-links">
+    <li><a href="#hero">Accueil</a></li>
+    <li><a href="#works">Travaux</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-bg-text">LÉO<br>CHAN<br>SERELLE</div>
+  <div class="hero-editor">EDITOR</div>
+  <div class="hero-content">
+    <div>
+      <div class="hero-tag">Video Editor · VFX · Polyvalent</div>
+      <h1>Léo<br><em>Chan</em>serelle</h1>
+    </div>
+    <div class="hero-right">
+      <p class="hero-desc">Monteur vidéo polyvalent, capable de s'adapter à tous les types de contenu — de l'edit dynamique au documentaire, du clip au corporate.</p>
+      <div class="hero-actions">
+        <a href="#works" class="btn-primary">Voir mes travaux →</a>
+        <a href="#contact" class="btn-ghost">Me contacter</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CAROUSEL -->
+<section id="works">
+  <div style="text-align:center; padding: 0 60px 60px;">
+    <p style="font-size:0.58rem;letter-spacing:0.45em;text-transform:uppercase;color:var(--mid);margin-bottom:16px;">Portfolio</p>
+    <h2 style="font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(2.5rem,5vw,5rem);letter-spacing:-0.02em;color:var(--white);line-height:1;">Derniers <span style="-webkit-text-stroke:1px rgba(255,255,255,0.25);color:transparent;">Travaux</span></h2>
+  </div>
+
+  <div class="carousel-outer">
+    <div class="carousel-track" id="track">
+
+      <div class="vid-card" onclick="window.open('https://www.youtube.com/watch?v=zD-BNnHMYsI','_blank')">
+        <div class="vid-thumb">
+          <img src="https://img.youtube.com/vi/zD-BNnHMYsI/maxresdefault.jpg" alt="VFX Showreel">
+          <div class="vid-overlay"><div class="play-ring">▶</div></div>
+        </div>
+        <div class="vid-info">
+          <div class="vid-cat">VFX · Motion</div>
+          <div class="vid-title">VFX Showreel 2025</div>
+        </div>
+      </div>
+
+      <div class="vid-card" onclick="window.open('https://www.youtube.com/watch?v=30KRt1qreG8','_blank')">
+        <div class="vid-thumb">
+          <img src="https://img.youtube.com/vi/30KRt1qreG8/maxresdefault.jpg" alt="Cinematic Cut">
+          <div class="vid-overlay"><div class="play-ring">▶</div></div>
+        </div>
+        <div class="vid-info">
+          <div class="vid-cat">Cinematic</div>
+          <div class="vid-title">Cinematic Cut</div>
+        </div>
+      </div>
+
+      <div class="vid-card" style="cursor:default;">
+        <div class="vid-thumb" style="display:flex;align-items:center;justify-content:center;background:#161616;">
+          <div style="text-align:center;">
+            <div style="font-family:'Syne',sans-serif;font-size:0.6rem;letter-spacing:0.4em;text-transform:uppercase;color:#444;margin-bottom:8px;">Bientôt</div>
+            <div style="font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:800;color:transparent;-webkit-text-stroke:1px rgba(255,255,255,0.15);letter-spacing:0.08em;">INCOMING</div>
+          </div>
+        </div>
+        <div class="vid-info">
+          <div class="vid-cat">En cours</div>
+          <div class="vid-title" style="color:#444;">Prochain projet...</div>
+        </div>
+      </div>
+
+    </div>>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="contact-left">
+    <div class="section-label" style="margin-bottom:32px;">Contact</div>
+    <h2 class="contact-title">Travaillons<br><em>ensemble.</em></h2>
+    <p class="contact-desc">Un projet, une collab, une commande ? Écrivez-moi un message ou retrouvez-moi sur les réseaux.</p>
+
+    <div class="socials">
+      <a class="social-row" href="/cdn-cgi/l/email-protection#a6d2c9d4d5cec3c2cfd2e6c1cbc7cfca88c5c9cb">
+        <div class="social-icon">✉</div>
+        <div>
+          <div class="social-lbl">Email</div>
+          <div class="social-val"><span class="__cf_email__" data-cfemail="493d263b3a212c2d203d092e24282025672a2624">[email&#160;protected]</span></div>
+        </div>
+        <span class="social-arrow">→</span>
+      </a>
+      <a class="social-row" href="tel:+33769561702">
+        <div class="social-icon">☎</div>
+        <div>
+          <div class="social-lbl">Téléphone</div>
+          <div class="social-val">07 69 56 17 02</div>
+        </div>
+        <span class="social-arrow">→</span>
+      </a>
+      <a class="social-row" href="https://www.instagram.com/__torsh/" target="_blank" rel="noopener">
+        <div class="social-icon">◈</div>
+        <div>
+          <div class="social-lbl">Instagram</div>
+          <div class="social-val">@__torsh</div>
+        </div>
+        <span class="social-arrow">→</span>
+      </a>
+      <a class="social-row" href="https://linkedin.com" target="_blank" rel="noopener">
+        <div class="social-icon" style="font-family:sans-serif;font-weight:700;font-size:0.72rem;">in</div>
+        <div>
+          <div class="social-lbl">LinkedIn</div>
+          <div class="social-val">Léo Chanserelle</div>
+        </div>
+        <span class="social-arrow">→</span>
+      </a>
+    </div>
+  </div>
+
+  <form class="contact-form" onsubmit="submitForm(event)">
+    <div class="form-row">
+      <div class="fg"><label>Prénom</label><input type="text" placeholder="Jean" required /></div>
+      <div class="fg"><label>Nom</label><input type="text" placeholder="Dupont" /></div>
+    </div>
+    <div class="fg"><label>Email</label><input type="email" placeholder="jean@email.com" required /></div>
+    <div class="fg"><label>Sujet</label><input type="text" placeholder="Commande, collab, question..." /></div>
+    <div class="fg"><label>Message</label><textarea placeholder="Décrivez votre projet..."></textarea></div>
+    <button type="submit" class="btn-submit">Envoyer le message →</button>
+    <div class="form-ok" id="formOk">✓ Message envoyé — je vous réponds sous 24h !</div>
+  </form>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="f-logo">Léo Chanserelle</div>
+  <p class="f-copy">© 2025 Léo Chanserelle — Tous droits réservés</p>
+  <p class="f-by">Site par ClarkWeb</p>
+</footer>
+
+<!-- LIGHTBOX -->
+<div class="lb" id="lb">
+  <div class="lb-inner">
+    <button class="lb-close" onclick="closeLb()">✕</button>
+    <div class="lb-video">
+      <iframe id="lbFrame" src="" allowfullscreen allow="autoplay"></iframe>
+    </div>
+    <div class="lb-title" id="lbTitle"></div>
+  </div>
+</div>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+  // Set email (bypass spam protection)
+  (function() {
+    var u = 'torshedit';
+    var d = 'gmail.com';
+    var e = u + '@' + d;
+    var row = document.getElementById('emailRow');
+    var val = document.getElementById('emailVal');
+    if (row) row.href = 'mailto:' + e;
+    if (val) val.textContent = e;
+  })();
+
+  // Carousel drag
+  const track = document.getElementById('track');
+  let drag = false, startX, scrollLeft;
+
+  track.addEventListener('mousedown', e => {
+    drag = true;
+    startX = e.pageX - track.offsetLeft;
+    scrollLeft = track.scrollLeft;
+  });
+  track.addEventListener('mouseleave', () => drag = false);
+  track.addEventListener('mouseup', () => drag = false);
+  track.addEventListener('mousemove', e => {
+    if (!drag) return;
+    e.preventDefault();
+    track.scrollLeft = scrollLeft - (e.pageX - track.offsetLeft - startX);
+  });
+
+  // Carousel buttons
+  function scroll(dir) {
+    track.scrollBy({ left: dir * 380, behavior: 'smooth' });
+  }
+
+  // Lightbox
+  function openLb(url, title) {
+    document.getElementById('lbFrame').src = url + '?autoplay=1';
+    document.getElementById('lbTitle').textContent = title;
+    document.getElementById('lb').classList.add('on');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeLb() {
+    document.getElementById('lb').classList.remove('on');
+    document.getElementById('lbFrame').src = '';
+    document.body.style.overflow = '';
+  }
+
+  document.getElementById('lb').addEventListener('click', e => {
+    if (e.target === document.getElementById('lb')) closeLb();
+  });
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') closeLb();
+  });
+
+  // Form
+  function submitForm(e) {
+    e.preventDefault();
+    const ok = document.getElementById('formOk');
+    ok.style.display = 'block';
+    e.target.reset();
+    setTimeout(() => ok.style.display = 'none', 5000);
+  }
+
+  // Scroll reveal
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(el => {
+      if (el.isIntersecting) {
+        el.target.style.opacity = '1';
+        el.target.style.transform = 'translateY(0)';
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.vid-card, .social-row').forEach(el => {
+   
