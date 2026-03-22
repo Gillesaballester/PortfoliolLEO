@@ -604,7 +604,7 @@
     <li><a href="#works">Travaux</a></li>
     <li><a href="#contact">Contact</a></li>
   </ul>
-  <button class="btn-primary" id="tarifsBtn" style="font-size:0.6rem;padding:10px 20px;border:none;cursor:pointer;">Mes Tarifs →</button>
+  <button class="btn-tarifs">Mes Tarifs →</button>
 </nav>
 
 <!-- HERO -->
@@ -835,126 +835,163 @@
   }, { threshold: 0.1 });
 
   document.querySelectorAll('.vid-card, .social-row').forEach(el => {
+   
     el.style.opacity = '0';
     el.style.transform = 'translateY(20px)';
     el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
     obs.observe(el);
   });
-
-  // ── TARIFS ──
-  document.getElementById('tarifsBtn').addEventListener('click', function() {
-    document.getElementById('tarifsOverlay').style.display = 'block';
-    document.body.style.overflow = 'hidden';
-  });
-
-  document.getElementById('tarifsClose').addEventListener('click', function() {
-    document.getElementById('tarifsOverlay').style.display = 'none';
-    document.body.style.overflow = '';
-    // on reste où on était, pas de scroll
-  });
-
-  document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') {
-      document.getElementById('tarifsOverlay').style.display = 'none';
-      document.body.style.overflow = '';
-    }
-  });
-
-  document.querySelectorAll('.plan-cta').forEach(function(btn) {
-    btn.addEventListener('click', function(e) {
-      e.preventDefault();
-      document.getElementById('tarifsOverlay').style.display = 'none';
-      document.body.style.overflow = '';
-      document.getElementById('contact').scrollIntoView({ behavior: 'smooth' });
-    });
-  });
-
 </script>
 
-<!-- TARIFS OVERLAY -->
-<div id="tarifsOverlay" style="display:none;position:fixed;inset:0;z-index:200;background:rgba(0,0,0,0.96);backdrop-filter:blur(20px);overflow-y:auto;">
-  <button id="tarifsClose" style="position:fixed;top:22px;right:60px;background:none;border:1px solid rgba(255,255,255,0.08);color:#777;width:38px;height:38px;font-size:0.9rem;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:201;transition:border-color 0.2s,color 0.2s;">✕</button>
-  <div style="max-width:1100px;margin:0 auto;padding:120px 60px 100px;">
+<!-- POPUP TARIFS -->
+<dialog id="tarifsPopup" style="
+  border:none;
+  border-radius:0;
+  background:#0e0e0e;
+  color:#e8e8e8;
+  padding:0;
+  width:100vw;
+  height:100vh;
+  max-width:100vw;
+  max-height:100vh;
+  overflow-y:auto;
+  margin:0;
+">
+<div style="padding:48px 60px 52px; position:relative; display:flex; flex-direction:column; min-height:100vh;">
 
-    <div style="text-align:center;margin-bottom:72px;">
-      <p style="font-size:0.58rem;letter-spacing:0.45em;text-transform:uppercase;color:#777;margin-bottom:16px;">Prestations</p>
-      <h2 style="font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(2.8rem,5.5vw,5.5rem);line-height:1;letter-spacing:-0.02em;color:#fff;">Mes <span style="color:transparent;-webkit-text-stroke:1px rgba(255,255,255,0.25);">Tarifs</span></h2>
+  <!-- Fermer -->
+  <button onclick="document.getElementById('tarifsPopup').close()" style="
+    position:sticky;top:0;float:right;
+    background:none;border:1px solid rgba(255,255,255,0.1);color:#777;
+    width:36px;height:36px;font-size:1rem;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;
+    transition:color 0.2s,border-color 0.2s;
+    margin-bottom:16px;
+  ">✕</button>
+
+  <!-- Header -->
+  <p style="font-size:0.58rem;letter-spacing:0.45em;text-transform:uppercase;color:#777;margin-bottom:12px;">Prestations</p>
+  <h2 style="font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(2rem,4vw,3.5rem);line-height:1;letter-spacing:-0.02em;color:#fff;margin-bottom:52px;">
+    Mes <span style="color:transparent;-webkit-text-stroke:1px rgba(255,255,255,0.25);">Tarifs</span>
+  </h2>
+
+  <!-- Plans -->
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-bottom:20px;flex:1;align-items:stretch;">
+
+    <!-- Starter -->
+    <div style="border:1px solid rgba(255,255,255,0.08);padding:40px 28px;background:#141414;display:flex;flex-direction:column;min-height:480px;">
+      <div style="font-family:'Syne',sans-serif;font-size:0.55rem;font-weight:700;letter-spacing:0.35em;text-transform:uppercase;color:#777;margin-bottom:10px;">Starter</div>
+      <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:2.8rem;line-height:1;color:#fff;margin-bottom:4px;">15<span style="font-size:1rem;font-weight:400;color:#777;">€</span></div>
+      <p style="font-size:0.7rem;color:#777;line-height:1.6;margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid rgba(255,255,255,0.07);">Idéal pour un montage propre, court et efficace.</p>
+      <ul style="list-style:none;display:flex;flex-direction:column;gap:8px;flex:1;margin-bottom:24px;">
+        <li style="font-size:0.74rem;color:#e8e8e8;display:flex;gap:8px;"><span style="color:#444;">—</span>Coupes propres &amp; rythme fluide</li>
+        <li style="font-size:0.74rem;color:#e8e8e8;display:flex;gap:8px;"><span style="color:#444;">—</span>Musique calée sur le beat</li>
+        <li style="font-size:0.74rem;color:#e8e8e8;display:flex;gap:8px;"><span style="color:#444;">—</span>Structure simple et claire</li>
+        <li style="font-size:0.74rem;color:#e8e8e8;display:flex;gap:8px;"><span style="color:#444;">—</span>Export optimisé (TikTok / Reels)</li>
+      </ul>
+      <button onclick="goContact()" style="padding:10px;border:1px solid rgba(255,255,255,0.1);background:none;color:#777;font-family:'Syne',sans-serif;font-size:0.58rem;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;cursor:pointer;transition:all 0.2s;">Commander →</button>
     </div>
 
-    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-bottom:24px;">
-
-      <!-- STARTER -->
-      <div style="border:1px solid rgba(255,255,255,0.08);padding:36px 28px 32px;background:#141414;position:relative;display:flex;flex-direction:column;transition:border-color 0.3s,transform 0.3s;">
-        <div style="font-family:'Syne',sans-serif;font-size:0.6rem;font-weight:700;letter-spacing:0.35em;text-transform:uppercase;color:#777;margin-bottom:14px;">Starter</div>
-        <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:3.4rem;line-height:1;color:#fff;letter-spacing:-0.03em;margin-bottom:6px;">15<span style="font-size:1.2rem;font-weight:400;color:#777;">€</span></div>
-        <p style="font-size:0.73rem;color:#777;line-height:1.65;margin-bottom:28px;padding-bottom:28px;border-bottom:1px solid rgba(255,255,255,0.08);">Idéal pour un montage propre, court et efficace.</p>
-        <ul style="list-style:none;display:flex;flex-direction:column;gap:11px;flex:1;margin-bottom:30px;">
-          <li style="font-size:0.78rem;color:#e8e8e8;display:flex;gap:10px;"><span style="color:#333;flex-shrink:0;">—</span>Coupes propres &amp; rythme fluide</li>
-          <li style="font-size:0.78rem;color:#e8e8e8;display:flex;gap:10px;"><span style="color:#333;flex-shrink:0;">—</span>Musique calée sur le beat</li>
-          <li style="font-size:0.78rem;color:#e8e8e8;display:flex;gap:10px;"><span style="color:#333;flex-shrink:0;">—</span>Structure simple et claire</li>
-          <li style="font-size:0.78rem;color:#e8e8e8;display:flex;gap:10px;"><span style="color:#333;flex-shrink:0;">—</span>Export optimisé (TikTok / Reels)</li>
-        </ul>
-        <a href="#contact" class="plan-cta" style="display:block;text-align:center;padding:12px 20px;border:1px solid rgba(255,255,255,0.08);color:#777;font-family:'Syne',sans-serif;font-size:0.6rem;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;text-decoration:none;margin-top:auto;">Commander →</a>
-      </div>
-
-      <!-- CREATOR -->
-      <div style="border:1px solid rgba(255,255,255,0.2);padding:36px 28px 32px;background:#141414;position:relative;display:flex;flex-direction:column;transition:border-color 0.3s,transform 0.3s;">
-        <div style="position:absolute;top:-1px;right:22px;font-family:'Syne',sans-serif;font-size:0.48rem;font-weight:700;letter-spacing:0.3em;text-transform:uppercase;color:#0e0e0e;background:#fff;padding:4px 10px;">Populaire</div>
-        <div style="font-family:'Syne',sans-serif;font-size:0.6rem;font-weight:700;letter-spacing:0.35em;text-transform:uppercase;color:#777;margin-bottom:14px;">Creator</div>
-        <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:3.4rem;line-height:1;color:#fff;letter-spacing:-0.03em;margin-bottom:6px;">30<span style="font-size:1.2rem;font-weight:400;color:#777;">€</span></div>
-        <p style="font-size:0.73rem;color:#777;line-height:1.65;margin-bottom:28px;padding-bottom:28px;border-bottom:1px solid rgba(255,255,255,0.08);">Parfait pour un contenu créatif agréable à regarder.</p>
-        <ul style="list-style:none;display:flex;flex-direction:column;gap:11px;flex:1;margin-bottom:30px;">
-          <li style="font-size:0.78rem;color:#e8e8e8;display:flex;gap:10px;"><span style="color:#333;flex-shrink:0;">—</span>Tout du Starter</li>
-          <li style="font-size:0.78rem;color:#e8e8e8;display:flex;gap:10px;"><span style="color:#333;flex-shrink:0;">—</span>Transitions fluides &amp; naturelles</li>
-          <li style="font-size:0.78rem;color:#e8e8e8;display:flex;gap:10px;"><span style="color:#333;flex-shrink:0;">—</span>Sous-titres stylés</li>
-          <li style="font-size:0.78rem;color:#e8e8e8;display:flex;gap:10px;"><span style="color:#333;flex-shrink:0;">—</span>Léger color grading</li>
-          <li style="font-size:0.78rem;color:#e8e8e8;display:flex;gap:10px;"><span style="color:#333;flex-shrink:0;">—</span>Montage plus rythmé et dynamique</li>
-        </ul>
-        <a href="#contact" class="plan-cta" style="display:block;text-align:center;padding:12px 20px;background:#fff;color:#0e0e0e;border:1px solid #fff;font-family:'Syne',sans-serif;font-size:0.6rem;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;text-decoration:none;margin-top:auto;">Commander →</a>
-      </div>
-
-      <!-- IMPACT -->
-      <div style="border:1px solid rgba(255,255,255,0.08);padding:36px 28px 32px;background:#141414;position:relative;display:flex;flex-direction:column;transition:border-color 0.3s,transform 0.3s;">
-        <div style="font-family:'Syne',sans-serif;font-size:0.6rem;font-weight:700;letter-spacing:0.35em;text-transform:uppercase;color:#777;margin-bottom:14px;">Impact</div>
-        <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:3.4rem;line-height:1;color:#fff;letter-spacing:-0.03em;margin-bottom:6px;">50<span style="font-size:1.2rem;font-weight:400;color:#777;">€</span></div>
-        <p style="font-size:0.73rem;color:#777;line-height:1.65;margin-bottom:28px;padding-bottom:28px;border-bottom:1px solid rgba(255,255,255,0.08);">Pour les créateurs et petites marques qui veulent une vidéo qui accroche dès les 3 premières secondes.</p>
-        <ul style="list-style:none;display:flex;flex-direction:column;gap:11px;flex:1;margin-bottom:30px;">
-          <li style="font-size:0.78rem;color:#e8e8e8;display:flex;gap:10px;"><span style="color:#333;flex-shrink:0;">—</span>Tout du Creator</li>
-          <li style="font-size:0.78rem;color:#e8e8e8;display:flex;gap:10px;"><span style="color:#333;flex-shrink:0;">—</span>Sound design (whoosh, hits, bass…)</li>
-          <li style="font-size:0.78rem;color:#e8e8e8;display:flex;gap:10px;"><span style="color:#333;flex-shrink:0;">—</span>Effets visuels (zooms, overlays, particules…)</li>
-          <li style="font-size:0.78rem;color:#e8e8e8;display:flex;gap:10px;"><span style="color:#333;flex-shrink:0;">—</span>Travail d'ambiance &amp; d'émotion</li>
-          <li style="font-size:0.78rem;color:#e8e8e8;display:flex;gap:10px;"><span style="color:#333;flex-shrink:0;">—</span>Storytelling léger pour plus d'impact</li>
-        </ul>
-        <a href="#contact" class="plan-cta" style="display:block;text-align:center;padding:12px 20px;border:1px solid rgba(255,255,255,0.08);color:#777;font-family:'Syne',sans-serif;font-size:0.6rem;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;text-decoration:none;margin-top:auto;">Commander →</a>
-      </div>
-
+    <!-- Creator -->
+    <div style="border:1px solid rgba(255,255,255,0.22);padding:40px 28px;background:#141414;display:flex;flex-direction:column;position:relative;min-height:480px;">
+      <div style="position:absolute;top:-1px;right:18px;font-family:'Syne',sans-serif;font-size:0.44rem;font-weight:700;letter-spacing:0.3em;text-transform:uppercase;color:#0e0e0e;background:#fff;padding:3px 9px;">Populaire</div>
+      <div style="font-family:'Syne',sans-serif;font-size:0.55rem;font-weight:700;letter-spacing:0.35em;text-transform:uppercase;color:#777;margin-bottom:10px;">Creator</div>
+      <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:2.8rem;line-height:1;color:#fff;margin-bottom:4px;">30<span style="font-size:1rem;font-weight:400;color:#777;">€</span></div>
+      <p style="font-size:0.7rem;color:#777;line-height:1.6;margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid rgba(255,255,255,0.07);">Parfait pour un contenu créatif agréable à regarder.</p>
+      <ul style="list-style:none;display:flex;flex-direction:column;gap:8px;flex:1;margin-bottom:24px;">
+        <li style="font-size:0.74rem;color:#e8e8e8;display:flex;gap:8px;"><span style="color:#444;">—</span>Tout du Starter</li>
+        <li style="font-size:0.74rem;color:#e8e8e8;display:flex;gap:8px;"><span style="color:#444;">—</span>Transitions fluides &amp; naturelles</li>
+        <li style="font-size:0.74rem;color:#e8e8e8;display:flex;gap:8px;"><span style="color:#444;">—</span>Sous-titres stylés</li>
+        <li style="font-size:0.74rem;color:#e8e8e8;display:flex;gap:8px;"><span style="color:#444;">—</span>Léger color grading</li>
+        <li style="font-size:0.74rem;color:#e8e8e8;display:flex;gap:8px;"><span style="color:#444;">—</span>Montage plus rythmé et dynamique</li>
+      </ul>
+      <button onclick="goContact()" style="padding:10px;border:none;background:#fff;color:#0e0e0e;font-family:'Syne',sans-serif;font-size:0.58rem;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;cursor:pointer;transition:opacity 0.2s;">Commander →</button>
     </div>
 
-    <!-- EXTRAS -->
-    <div style="border:1px solid rgba(255,255,255,0.08);padding:36px 40px;background:#141414;">
-      <div style="font-family:'Syne',sans-serif;font-size:0.58rem;font-weight:700;letter-spacing:0.4em;text-transform:uppercase;color:#777;margin-bottom:28px;display:flex;align-items:center;gap:16px;">Options supplémentaires <span style="flex:1;height:1px;background:rgba(255,255,255,0.08);display:block;"></span></div>
-      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;">
-        <div style="display:flex;flex-direction:column;gap:6px;padding:18px 16px;border:1px solid rgba(255,255,255,0.08);">
-          <span style="font-size:0.75rem;color:#e8e8e8;line-height:1.45;">Livraison express (24h)</span>
-          <span style="font-family:'Syne',sans-serif;font-size:0.85rem;font-weight:700;color:#fff;">+10€</span>
-        </div>
-        <div style="display:flex;flex-direction:column;gap:6px;padding:18px 16px;border:1px solid rgba(255,255,255,0.08);">
-          <span style="font-size:0.75rem;color:#e8e8e8;line-height:1.45;">Révision supplémentaire</span>
-          <span style="font-family:'Syne',sans-serif;font-size:0.85rem;font-weight:700;color:#fff;">+5€</span>
-        </div>
-        <div style="display:flex;flex-direction:column;gap:6px;padding:18px 16px;border:1px solid rgba(255,255,255,0.08);">
-          <span style="font-size:0.75rem;color:#e8e8e8;line-height:1.45;">Multi-format (TikTok + Reels)</span>
-          <span style="font-family:'Syne',sans-serif;font-size:0.85rem;font-weight:700;color:#fff;">+5€</span>
-        </div>
-        <div style="display:flex;flex-direction:column;gap:6px;padding:18px 16px;border:1px solid rgba(255,255,255,0.08);">
-          <span style="font-size:0.75rem;color:#e8e8e8;line-height:1.45;">Effets avancés / tracking</span>
-          <span style="font-family:'Syne',sans-serif;font-size:0.85rem;font-weight:700;color:#fff;">+5€ → +15€</span>
-        </div>
-      </div>
+    <!-- Impact -->
+    <div style="border:1px solid rgba(255,255,255,0.08);padding:40px 28px;background:#141414;display:flex;flex-direction:column;min-height:480px;">
+      <div style="font-family:'Syne',sans-serif;font-size:0.55rem;font-weight:700;letter-spacing:0.35em;text-transform:uppercase;color:#777;margin-bottom:10px;">Impact</div>
+      <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:2.8rem;line-height:1;color:#fff;margin-bottom:4px;">50<span style="font-size:1rem;font-weight:400;color:#777;">€</span></div>
+      <p style="font-size:0.7rem;color:#777;line-height:1.6;margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid rgba(255,255,255,0.07);">Pour les créateurs et petites marques qui veulent une vidéo qui accroche dès les 3 premières secondes.</p>
+      <ul style="list-style:none;display:flex;flex-direction:column;gap:8px;flex:1;margin-bottom:24px;">
+        <li style="font-size:0.74rem;color:#e8e8e8;display:flex;gap:8px;"><span style="color:#444;">—</span>Tout du Creator</li>
+        <li style="font-size:0.74rem;color:#e8e8e8;display:flex;gap:8px;"><span style="color:#444;">—</span>Sound design (whoosh, hits, bass…)</li>
+        <li style="font-size:0.74rem;color:#e8e8e8;display:flex;gap:8px;"><span style="color:#444;">—</span>Effets visuels (zooms, overlays, particules…)</li>
+        <li style="font-size:0.74rem;color:#e8e8e8;display:flex;gap:8px;"><span style="color:#444;">—</span>Travail d'ambiance &amp; d'émotion</li>
+        <li style="font-size:0.74rem;color:#e8e8e8;display:flex;gap:8px;"><span style="color:#444;">—</span>Storytelling léger pour plus d'impact</li>
+      </ul>
+      <button onclick="goContact()" style="padding:10px;border:1px solid rgba(255,255,255,0.1);background:none;color:#777;font-family:'Syne',sans-serif;font-size:0.58rem;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;cursor:pointer;transition:all 0.2s;">Commander →</button>
     </div>
 
   </div>
+
+  <!-- Extras -->
+  <div style="border:1px solid rgba(255,255,255,0.08);padding:28px 28px;background:#141414;">
+    <p style="font-family:'Syne',sans-serif;font-size:0.55rem;font-weight:700;letter-spacing:0.4em;text-transform:uppercase;color:#777;margin-bottom:20px;">Options supplémentaires</p>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;">
+      <div style="padding:14px;border:1px solid rgba(255,255,255,0.07);">
+        <div style="font-size:0.72rem;color:#e8e8e8;margin-bottom:4px;">Livraison express (24h)</div>
+        <div style="font-family:'Syne',sans-serif;font-weight:700;color:#fff;">+10€</div>
+      </div>
+      <div style="padding:14px;border:1px solid rgba(255,255,255,0.07);">
+        <div style="font-size:0.72rem;color:#e8e8e8;margin-bottom:4px;">Révision supplémentaire</div>
+        <div style="font-family:'Syne',sans-serif;font-weight:700;color:#fff;">+5€</div>
+      </div>
+      <div style="padding:14px;border:1px solid rgba(255,255,255,0.07);">
+        <div style="font-size:0.72rem;color:#e8e8e8;margin-bottom:4px;">Multi-format (TikTok + Reels)</div>
+        <div style="font-family:'Syne',sans-serif;font-weight:700;color:#fff;">+5€</div>
+      </div>
+      <div style="padding:14px;border:1px solid rgba(255,255,255,0.07);">
+        <div style="font-size:0.72rem;color:#e8e8e8;margin-bottom:4px;">Effets avancés / tracking</div>
+        <div style="font-family:'Syne',sans-serif;font-weight:700;color:#fff;">+5€ → +15€</div>
+      </div>
+    </div>
+  </div>
+
 </div>
+</dialog>
+
+<style>
+  #tarifsPopup::backdrop {
+    background: rgba(0,0,0,0.85);
+    backdrop-filter: blur(8px);
+  }
+  nav .btn-tarifs {
+    padding: 10px 20px;
+    background: #fff;
+    color: #0e0e0e;
+    font-family: 'Syne', sans-serif;
+    font-size: 0.6rem;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    border: none;
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+  nav .btn-tarifs:hover { opacity: 0.8; }
+</style>
+
+<script>
+  // Bouton Mes Tarifs
+  document.querySelector('.btn-tarifs').addEventListener('click', function() {
+    document.getElementById('tarifsPopup').showModal();
+  });
+
+  // Commander → ferme popup + scroll contact
+  function goContact() {
+    document.getElementById('tarifsPopup').close();
+    document.getElementById('contact').scrollIntoView({ behavior: 'smooth' });
+  }
+
+  // Clic en dehors du popup = fermeture
+  document.getElementById('tarifsPopup').addEventListener('click', function(e) {
+    const rect = this.getBoundingClientRect();
+    if (e.clientX < rect.left || e.clientX > rect.right || e.clientY < rect.top || e.clientY > rect.bottom) {
+      this.close();
+    }
+  });
+</script>
 
 </body>
 </html>
